@@ -1,0 +1,53 @@
+# ============================================================================
+# taugether — Render Blueprint
+#
+# Deploy: https://dashboard.render.com/blueprints  ->  "New Blueprint"
+#         paste your GitHub repo, Render auto-detects this file.
+#
+# Notes:
+#   * JWT_SECRET / JWT_REFRESH_SECRET are generated once at first deploy and
+#     kept afterwards (sync: false).
+#   * CORS_ORIGIN: set it to your app URL, e.g. https://taugether.onrender.com
+#     (same origin — it is only used for the CORS header, no blocking happens).
+#   * Uploads persistence: the free plan has no persistent disks, so uploaded
+#     files are wiped on redeploy. Uncomment `disk:` below once on a paid plan.
+#   * Prefer Render Postgres for the schema bootstrap to work out of the box.
+#     If you use Neon, point SCHEMA_DATABASE_URL at the *direct* (non-pooler)
+#     connection URL so the initial schema apply succeeds.
+# ============================================================================
+
+services:
+  - type: web
+    name: taugether
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /health
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: taugether-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+        sync: false
+      - key: JWT_REFRESH_SECRET
+        generateValue: true
+        sync: false
+      - key: CORS_ORIGIN
+        value: https://taugether.onrender.com
+      - key: UPLOAD_DIR
+        value: /data/uploads
+      # - key: SCHEMA_DATABASE_URL
+      #   sync: false
+    # Persistent disk for uploaded files (paid plans only).
+    # disk:
+    #   name: uploads
+    #   mountPath: /data
+    #   sizeGB: 1
+
+databases:
+  - name: taugether-db
+    plan: free
+    databaseName: taugether
+    user: taugether

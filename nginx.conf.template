@@ -1,0 +1,53 @@
+# taugether nginx config — rendered at startup by entrypoint.sh (envsubst).
+# ${PORT} is the externally reachable port (Render injects it; default 8080).
+# ${BACKEND_PORT} is the internal port the Go API listens on (default 9000).
+#
+# The SPA, API and uploads all live on this one server block.
+
+server {
+    listen ${PORT} default_server;
+    server_name _;
+
+    root /usr/share/nginx/html;
+    index index.html;
+
+    # Uploads can be large; match what the API accepts.
+    client_max_body_size 50m;
+    charset utf-8;
+
+    # --- API ---
+    location ^~ /api/ {
+        proxy_pass http://127.0.0.1:${BACKEND_PORT};
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Forwarded-Host $host;
+    }
+
+    # --- Uploaded files (images and downloadable files) ---
+    location ^~ /uploads/ {
+        proxy_pass http://127.0.0.1:${BACKEND_PORT};
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+    }
+
+    # --- Health check (used by Render and docker-compose) ---
+    location = /health {
+        proxy_pass http://127.0.0.1:${BACKEND_PORT}/health;
+        proxy_set_header Host $host;
+    }
+
+    # --- SPA: any other path returns index.html (client-side routing) ---
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+
+    # --- Hash-named static assets: cache hard ---
+    location ~* \.(?:js|css|svg|png|jpg|jpeg|gif|webp|ico|woff2?|ttf|eot|map)$ {
+        try_files $uri =404;
+        expires 30d;
+        add_header Cache-Control "public, immutable";
+    }
+}

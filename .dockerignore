@@ -1,0 +1,37 @@
+# Keep secrets and generated/built artifacts out of the Docker build context.
+# Build context is the repo root.
+
+.git
+.gitignore
+.gitattributes
+**/.github
+
+# Secrets — never bake these into an image
+**/.env
+**/.env.*
+!.env.example
+.env.example
+
+# Dependencies
+**/node_modules
+
+# Build output
+frontend/dist
+backend/bin
+backend/taugether
+
+# Uploads / runtime data
+backend/uploads
+uploads
+
+# Local / OS junk
+*.log
+.DS_Store
+Thumbs.db
+*.swp
+.idea
+.vscode
+
+# Compose / Render configs aren't needed inside the image build
+docker-compose.yml
+render.yaml

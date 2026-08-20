@@ -1,0 +1,53 @@
+# ============================================================================
+# taugether — local full-stack stack
+#
+#   docker compose up --build
+#
+#   App:      http://localhost:8080
+#   Database: postgres://taugether:taugether@localhost:5432/taugether
+#
+# The container initializes the schema automatically on first boot.
+# ============================================================================
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: taugether
+      POSTGRES_PASSWORD: taugether
+      POSTGRES_DB: taugether
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U taugether -d taugether"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      PORT: "8080"
+      BACKEND_PORT: "9000"
+      DATABASE_URL: postgres://taugether:taugether@db:5432/taugether
+      # Generate real secrets for anything shared/production:
+      #   openssl rand -hex 64
+      JWT_SECRET: dev-only-change-me
+      JWT_REFRESH_SECRET: dev-only-change-me-too
+      CORS_ORIGIN: http://localhost:8080
+      UPLOAD_DIR: /data/uploads
+    volumes:
+      - uploads-data:/data
+    ports:
+      - "8080:8080"
+
+volumes:
+  db-data:
+  uploads-data:
