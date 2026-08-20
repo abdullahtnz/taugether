@@ -8,7 +8,7 @@ export default function Footer() {
           <div className="md:col-span-2">
             <div className="flex items-center gap-2">
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary-600 font-extrabold text-white">
-                t
+                tg
               </div>
               <span className="text-lg font-extrabold text-gray-900">
                 tau<span className="text-primary-600">gether</span>

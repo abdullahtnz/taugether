@@ -71,7 +71,7 @@ export default function Navbar() {
       <div className="mx-auto flex h-16 max-w-7xl items-center gap-4 px-4 sm:px-6">
         <Link to="/" className="flex shrink-0 items-center gap-2">
           <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary-600 font-extrabold text-white">
-            t
+            tg
           </div>
           <span className="text-xl font-extrabold tracking-tight text-gray-900">
             tau<span className="text-primary-600">gether</span>
