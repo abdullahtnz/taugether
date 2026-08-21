@@ -52,7 +52,7 @@ func (db *DB) GetCommentsForPost(ctx context.Context, postID string) ([]models.C
 // BuildCommentTree constructs the nested structure from a flat ordered list.
 func BuildCommentTree(flat []models.Comment) []models.Comment {
 	if len(flat) == 0 {
-		return nil
+		return []models.Comment{}
 	}
 	byID := map[string]*models.Comment{}
 	for i := range flat {

@@ -111,7 +111,7 @@ export default function CommentSection({ postId, comments }: { postId: string; c
   const [content, setContent] = useState('')
   const [error, setError] = useState('')
   const [submitting, setSubmitting] = useState(false)
-  const [localComments, setLocalComments] = useState<Comment[]>(comments)
+  const [localComments, setLocalComments] = useState<Comment[]>(comments ?? [])
 
   async function submit() {
     if (!content.trim()) return

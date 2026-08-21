@@ -33,10 +33,10 @@ type ReportRow struct {
 func (db *DB) ListUnresolvedReports(ctx context.Context) ([]models.Report, error) {
 	rows, err := db.Pool.Query(ctx, `
 		SELECT r.id, r.reason, r.is_resolved, r.created_at,
-		       p.id, u.username, u.profile_picture, u.is_admin,
-		       p.tag_id, t.name, p.title, p.content, p.is_news, p.is_edited,
+		       p.id, p.tag_id, t.name, p.title, p.content, p.is_news, p.is_edited,
 		       p.like_count, p.comment_count, p.created_at, p.updated_at,
-		       pu.username, pu.profile_picture, pu.is_admin
+		       u.id, u.username, u.profile_picture, u.is_admin,
+		       pu.id, pu.username, pu.profile_picture, pu.is_admin
 		FROM post_reports r
 		JOIN posts p ON p.id = r.post_id
 		JOIN tags t ON t.id = p.tag_id
@@ -55,10 +55,10 @@ func (db *DB) ListUnresolvedReports(ctx context.Context) ([]models.Report, error
 		var p models.Post
 		var tagID int
 		err := rows.Scan(&rep.ID, &rep.Reason, &rep.IsResolved, &rep.CreatedAt,
-			&rep.Reporter.ID, &rep.Reporter.Username, &rep.Reporter.ProfilePicture, &rep.Reporter.IsAdmin,
-			&tagID, &p.Tag.Name, &p.Title, &p.Content, &p.IsNews, &p.IsEdited,
+			&p.ID, &tagID, &p.Tag.Name, &p.Title, &p.Content, &p.IsNews, &p.IsEdited,
 			&p.LikeCount, &p.CommentCount, &p.CreatedAt, &p.UpdatedAt,
-			&p.Author.Username, &p.Author.ProfilePicture, &p.Author.IsAdmin)
+			&rep.Reporter.ID, &rep.Reporter.Username, &rep.Reporter.ProfilePicture, &rep.Reporter.IsAdmin,
+			&p.Author.ID, &p.Author.Username, &p.Author.ProfilePicture, &p.Author.IsAdmin)
 		if err != nil {
 			return nil, err
 		}

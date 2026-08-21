@@ -3,12 +3,14 @@ import { Link, useNavigate } from 'react-router-dom'
 import type { Post } from '../../types'
 import { timeAgo, formatCount, pluralize } from '../../utils/format'
 import { postApi } from '../../api/client'
+import { useAuth } from '../../context/AuthContext'
 import Avatar from '../ui/Avatar'
 import TagBadge from '../ui/TagBadge'
 import Button from '../ui/Button'
 import ReportModal from './ReportModal'
 
 export default function PostCard({ post, onUpdate }: { post: Post; onUpdate?: () => void }) {
+  const { user } = useAuth()
   const navigate = useNavigate()
   const [reportOpen, setReportOpen] = useState(false)
   const [liked, setLiked] = useState(post.is_liked)
@@ -50,7 +52,14 @@ export default function PostCard({ post, onUpdate }: { post: Post; onUpdate?: ()
                 </span>
               )}
             </Link>
-            <p className="text-xs text-gray-400">{timeAgo(post.created_at)}</p>
+            <p className="text-xs text-gray-400">
+              {timeAgo(post.created_at)}
+              {user?.is_admin && (
+                <span className="ml-2 rounded bg-gray-100 px-1.5 py-0.5 font-mono text-[10px] text-gray-500">
+                  ID: {post.id}
+                </span>
+              )}
+            </p>
           </div>
           <TagBadge tag={post.tag} />
         </div>
@@ -95,12 +104,14 @@ export default function PostCard({ post, onUpdate }: { post: Post; onUpdate?: ()
       </Link>
 
       <div className="flex items-center gap-1 border-t border-gray-100 px-3 py-2">
-        <Button variant="ghost" size="sm" onClick={toggleLike} className={liked ? 'text-primary-600' : ''}>
-          <svg className="h-4 w-4" fill={liked ? 'currentColor' : 'none'} viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5" />
-          </svg>
-          {formatCount(likeCount)} {pluralize(likeCount, 'like')}
-        </Button>
+        {!post.is_news && (
+          <Button variant="ghost" size="sm" onClick={toggleLike} className={liked ? 'text-primary-600' : ''}>
+            <svg className="h-4 w-4" fill={liked ? 'currentColor' : 'none'} viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5" />
+            </svg>
+            {formatCount(likeCount)} {pluralize(likeCount, 'like')}
+          </Button>
+        )}
         <Button
           variant="ghost"
           size="sm"
@@ -111,19 +122,21 @@ export default function PostCard({ post, onUpdate }: { post: Post; onUpdate?: ()
           </svg>
           {formatCount(post.comment_count)}
         </Button>
-        <div className="ml-auto flex items-center gap-1">
-          <Button variant="ghost" size="sm" onClick={toggleBookmark} className={bookmarked ? 'text-amber-500' : ''}>
-            <svg className="h-4 w-4" fill={bookmarked ? 'currentColor' : 'none'} viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
-            </svg>
-            {bookmarked ? 'Saved' : 'Save'}
-          </Button>
-          <Button variant="ghost" size="sm" onClick={() => setReportOpen(true)} className="text-gray-400 hover:text-red-500">
-            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-            </svg>
-          </Button>
-        </div>
+        {!post.is_news && (
+          <div className="ml-auto flex items-center gap-1">
+            <Button variant="ghost" size="sm" onClick={toggleBookmark} className={bookmarked ? 'text-amber-500' : ''}>
+              <svg className="h-4 w-4" fill={bookmarked ? 'currentColor' : 'none'} viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+              </svg>
+              {bookmarked ? 'Saved' : 'Save'}
+            </Button>
+            <Button variant="ghost" size="sm" onClick={() => setReportOpen(true)} className="text-gray-400 hover:text-red-500">
+              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+            </Button>
+          </div>
+        )}
       </div>
 
       <ReportModal

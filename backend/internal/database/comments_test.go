@@ -9,6 +9,16 @@ import (
 
 func ptr(s string) *string { return &s }
 
+func TestBuildCommentTreeEmptyReturnsEmptySlice(t *testing.T) {
+	tree := BuildCommentTree(nil)
+	if tree == nil {
+		t.Fatal("expected non-nil empty slice, got nil")
+	}
+	if len(tree) != 0 {
+		t.Fatalf("expected 0 comments, got %d", len(tree))
+	}
+}
+
 func TestBuildCommentTree(t *testing.T) {
 	now := time.Now()
 	flat := []models.Comment{
