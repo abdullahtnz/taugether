@@ -157,7 +157,7 @@ export default function PostPage() {
             <p className="mt-3 whitespace-pre-line text-gray-700">{post.content}</p>
           )}
 
-          {post.images.length > 0 && (
+          {post.images?.length > 0 && (
             <div className="mt-4 grid gap-2 sm:grid-cols-2">
               {post.images.map((img) => (
                 <a key={img.id} href={img.url} target="_blank" rel="noopener noreferrer">
@@ -172,7 +172,7 @@ export default function PostPage() {
             </div>
           )}
 
-          {post.files.length > 0 && (
+          {post.files?.length > 0 && (
             <div className="mt-4 space-y-2">
               <h3 className="text-sm font-semibold text-gray-700">Attachments</h3>
               {post.files.map((f) => (

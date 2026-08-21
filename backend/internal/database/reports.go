@@ -64,6 +64,8 @@ func (db *DB) ListUnresolvedReports(ctx context.Context) ([]models.Report, error
 		}
 		p.TagID = tagID
 		p.Tag.ID = tagID
+		p.Images = []models.Image{}
+		p.Files = []models.File{}
 		rep.Post = p
 		reports = append(reports, rep)
 	}

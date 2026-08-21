@@ -60,9 +60,9 @@ export default function PostCard({ post, onUpdate }: { post: Post; onUpdate?: ()
           <p className="mt-1.5 line-clamp-3 whitespace-pre-line text-sm text-gray-600">{post.content}</p>
         )}
 
-        {post.images.length > 0 && (
+        {post.images?.length > 0 && (
           <div className="mt-3 grid grid-cols-2 gap-2">
-            {post.images.slice(0, 4).map((img) => (
+            {post.images?.slice(0, 4).map((img) => (
               <img
                 key={img.id}
                 src={img.url}
@@ -74,9 +74,9 @@ export default function PostCard({ post, onUpdate }: { post: Post; onUpdate?: ()
           </div>
         )}
 
-        {post.files.length > 0 && (
+        {post.files?.length > 0 && (
           <div className="mt-3 flex flex-wrap gap-2">
-            {post.files.slice(0, 3).map((f) => (
+            {post.files?.slice(0, 3).map((f) => (
               <span
                 key={f.id}
                 className="inline-flex items-center gap-1 rounded-lg bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-700"
@@ -87,7 +87,7 @@ export default function PostCard({ post, onUpdate }: { post: Post; onUpdate?: ()
                 {f.original_name}
               </span>
             ))}
-            {post.files.length > 3 && (
+            {post.files?.length > 3 && (
               <span className="text-xs text-gray-400">+{post.files.length - 3} more</span>
             )}
           </div>

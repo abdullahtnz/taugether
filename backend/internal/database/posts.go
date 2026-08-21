@@ -30,6 +30,8 @@ func scanPost(row pgx.Row) (*models.Post, error) {
 		return nil, err
 	}
 	p.Tag.ID = p.TagID
+	p.Images = []models.Image{}
+	p.Files = []models.File{}
 	return &p, nil
 }
 
